@@ -28,14 +28,16 @@ char *get_next_line(int fd)
 	//printf("lin--->\n %d\n ------ \n",lin == NULL); //////<----- ************>
 	if (fd < 0 || BUFFER_SIZE < 1 || fd > OPEN_MAX)
 		return (NULL);
-	txt = read_txt(txt, fd);
-	//write(1,&txt[0],1);
-	//printf(" --- %d\n",txt[0]);
-	//printf("find char ---> %d\n",ft_findchar(txt,'\n')); //////<----- ************>
-	//if (ft_findchar(txt,'\n') == 1)
-	if (*txt != 0)
+	
+	/*if (ft_findchar(txt,'\n') == 1)
+	{
+		txt = read_txt(txt, fd);
+	}*/
+
+	txt = read_txt(txt, fd);	
+	//printf("lee txt = \n\n%s\n\n",txt);
+	if (txt)
 		lin = read_lin(&txt);
-	//printf("lin--->%d ------ \n",lin == NULL); //////<----- ************>
 	return (lin);
 }
 
@@ -45,19 +47,21 @@ char	*read_txt(char *txt, int fd)
 	int		nbytes;
 
 	nbytes = read (fd, &append_txt, BUFFER_SIZE);
-	//printf("nbytes = %d\n",nbytes); //////<----- ************>
 	while (nbytes > 0)
 	{
 		append_txt[nbytes] = '\0';
-		//printf("txt %s\n",txt); //////<----- ************>
-		//printf("append text %s\n",append_txt); //////<----- ************>
 		txt = ft_strjoin(txt, append_txt);
-		//printf("txt ---\n%s\n",txt); //////<----- ************>
 		nbytes = read (fd, &append_txt, BUFFER_SIZE);
-		//printf("nbytes = %d\n",nbytes); //////<----- ************>
 	}
 	//printf("sale del loop\n");
 	return (txt);
+}
+
+int	ft_min(i1,i2)
+{
+	if (i1 > i2)
+		return(i2);
+	return (i1);
 }
 
 char	*read_lin(char **txt)
@@ -68,29 +72,31 @@ char	*read_lin(char **txt)
 	size_t	strlen;
 
 	i = 0;
-	//printf("---> entra en readlin\n"); //////<----- ************>
 	txt_cpy = *txt;
-	//printf("txt---> %s ------ \n",*txt); //////<----- ************>
-	//printf("txt cpy--->\n %s\n ------ \n",txt_cpy); //////<----- ************>
 	strlen = ft_strlen(*txt);
-	//printf("strlen = %zu\n",strlen);  //////<----- ************>
-	if (!*txt)
+	
+	if (!*txt[0])
 		return (NULL);
 	
-	while (txt_cpy[i] && (txt_cpy[i+1] != '\n'))
+	//printf("entra txt = %s \n",*txt);
+	while (txt_cpy[i] && (txt_cpy[i+1] != '\n') && i < strlen)
 		i++;
-	//printf("i = %zu\n",i); //////<----- ************>
-	if (txt_cpy[i + 1] == '\n')
+
+	//printf("strlen = %zu ; i = %zu\n",strlen, i);
+	if (txt_cpy[i + 1] == '\n' && (i + 1) < strlen)
 	{
-		lin = ft_substr(*txt, 0, i + 2);
+		lin = ft_substr(*txt, 0, ft_min(i + 2, BUFFER_SIZE));
 		*txt = *txt + i + 2;
-		//printf("txt---> %s ------ \n",*txt); //////<----- ************>
+		//printf("lin +%s+\n",lin);
+		//printf("txt +%s+\n",*txt);
 	}
 	else /* end of file */
 	{
-		lin = ft_substr(*txt, 0, i + 1);
-		*txt = *txt + i + 1;
-		//*txt = NULL;
+		lin = ft_substr(*txt, 0, ft_min(i + 1, BUFFER_SIZE));
+		//*txt = *txt + i + 1;
+		*txt = NULL;
+		//printf("lin -%s-\n",lin);
+		//printf("txt -%s-\n",*txt);
 	}
 	//printf("i = %zu lin--->\n%s\n ------ \n",i,lin); //////<----- ************>
 	/*if (strlen >= i + 1)

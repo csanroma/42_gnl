@@ -14,7 +14,7 @@ int main()
 	fd = open ("test.txt", O_RDONLY);
 	//printf("%d\n", fd);
 	str = get_next_line(fd);
-
+	//printf("|%s|\n", str);
 	int i = 0;
 	while(str != NULL && i< 10)
 	{

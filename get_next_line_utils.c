@@ -35,6 +35,7 @@ size_t	ft_strlen(const char *str)
 
 int	ft_findchar(const char *s, int c)
 {
+	//printf("findchar = str %s \n",s);
 	if (!s)
 		return (-1);
 	else
