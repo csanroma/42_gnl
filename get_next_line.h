@@ -20,11 +20,12 @@
 # include <stdio.h>
 
 char	*get_next_line(int fd);
-char	*read_txt(char *txt, int fd);
-char	*read_lin(char **txt);
+char	*extract_line(char *txt);
+char	*trim_source(char *temp);
+char	*append_line(int fd, char *txt);
 
 size_t	ft_strlen(const char *str);
-int		ft_findchar(const char *s, int c);
+int		ft_findchar(char *s, int c);
 char	*ft_strdup(const char *s1);
 size_t	ft_strlcpy(char *dest, const char *src, size_t size);
 char	*ft_substr(const char *s, unsigned int start, size_t len);
