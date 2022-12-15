@@ -24,80 +24,103 @@ char *get_next_line(int fd)
 	static char *txt;
 	char		*lin;
 
-	lin = NULL;
-	//printf("lin--->\n %d\n ------ \n",lin == NULL); //////<----- ************>
-	if (fd < 0 || BUFFER_SIZE < 1 || fd > OPEN_MAX)
+	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	txt = read_txt(txt, fd);
-	//write(1,&txt[0],1);
-	//printf(" --- %d\n",txt[0]);
-	//printf("find char ---> %d\n",ft_findchar(txt,'\n')); //////<----- ************>
-	//if (ft_findchar(txt,'\n') == 1)
-	if (*txt != 0)
-		lin = read_lin(&txt);
-	//printf("lin--->%d ------ \n",lin == NULL); //////<----- ************>
+	txt = append_line(fd, txt);
+	if (!txt)
+		return (NULL);
+	lin = extract_line(txt);
+	txt = trim_source(txt);
+	if (!txt)
+	{
+		free(txt);
+	}
+	if (!lin)
+	{
+		free(lin);
+		return (NULL);
+	}
 	return (lin);
 }
 
-char	*read_txt(char *txt, int fd)
+char	*extract_line(char *txt)
 {
-	char	append_txt[BUFFER_SIZE + 1];
-	int		nbytes;
+	int		i;
+	char	*lin;
 
-	nbytes = read (fd, &append_txt, BUFFER_SIZE);
-	//printf("nbytes = %d\n",nbytes); //////<----- ************>
-	while (nbytes > 0)
+	i = 0;
+	if (!txt)
+		return (NULL);
+	while (txt[i] && txt[i] != '\n')
+		i++;
+	lin = (char *)malloc(sizeof(char) * (i + 2));
+	if (!lin)
+		return (NULL);
+	i = 0;
+	while (txt[i] && txt[i] != '\n')
 	{
-		append_txt[nbytes] = '\0';
-		//printf("txt %s\n",txt); //////<----- ************>
-		//printf("append text %s\n",append_txt); //////<----- ************>
-		txt = ft_strjoin(txt, append_txt);
-		//printf("txt ---\n%s\n",txt); //////<----- ************>
-		nbytes = read (fd, &append_txt, BUFFER_SIZE);
-		//printf("nbytes = %d\n",nbytes); //////<----- ************>
+		lin[i] = txt[i];
+		i++;
 	}
-	//printf("sale del loop\n");
+	if (txt[i] == '\n')
+	{
+		lin[i] = txt[i];
+		i++;
+	}
+	lin[i] = '\0';
+	return (lin);
+}
+
+char	*trim_source(char *temp)
+{
+	int		i;
+	int		j;
+	char	*txt;
+
+	i = 0;
+	while (temp[i] && temp[i] != '\n')
+		i++;
+	if (!temp[i])
+	{
+		free(temp);
+		return (NULL);
+	}
+	txt = (char *)malloc(sizeof(char) * (ft_strlen(temp) - i));
+	if (!txt)
+	{
+		free (txt);
+		return (NULL);
+	}
+	i++;
+	j = 0;
+	while (temp[i])
+		txt[j++] = temp[i++];
+	txt[j] = '\0';
+	free(temp);
 	return (txt);
 }
 
-char	*read_lin(char **txt)
+char	*append_line(int fd, char *txt)
 {
 	char	*lin;
-	char	*txt_cpy;
-	size_t	i;
-	size_t	strlen;
+	int		i;
 
-	i = 0;
-	//printf("---> entra en readlin\n"); //////<----- ************>
-	txt_cpy = *txt;
-	//printf("txt---> %s ------ \n",*txt); //////<----- ************>
-	//printf("txt cpy--->\n %s\n ------ \n",txt_cpy); //////<----- ************>
-	strlen = ft_strlen(*txt);
-	//printf("strlen = %zu\n",strlen);  //////<----- ************>
-	if (!*txt)
+	i = 1;
+	lin = malloc((BUFFER_SIZE + 1) * sizeof(char));
+	if (!lin)
 		return (NULL);
-	
-	while (txt_cpy[i] && (txt_cpy[i+1] != '\n'))
-		i++;
-	//printf("i = %zu\n",i); //////<----- ************>
-	if (txt_cpy[i + 1] == '\n')
+	while (!ft_findchar(txt, '\n') && i != 0)
 	{
-		lin = ft_substr(*txt, 0, i + 2);
-		*txt = *txt + i + 2;
-		//printf("txt---> %s ------ \n",*txt); //////<----- ************>
+		i = read(fd, lin, BUFFER_SIZE);
+		if (i == -1)
+		{
+			free (txt);
+			free (lin);
+			return (NULL);
+		}
+		lin[i] = '\0';
+		txt = ft_strjoin(txt, lin);
 	}
-	else /* end of file */
-	{
-		lin = ft_substr(*txt, 0, i + 1);
-		*txt = *txt + i + 1;
-		//*txt = NULL;
-	}
-	//printf("i = %zu lin--->\n%s\n ------ \n",i,lin); //////<----- ************>
-	/*if (strlen >= i + 1)
-		txt_cpy = ft_substr(*txt, i + 1, strlen - i - 1);
-	free(*txt);
-	*txt = txt_cpy;*/
-	//*txt = *txt + i;
-	
-	return (lin);
+	free (lin);
+	return (txt);
 }
