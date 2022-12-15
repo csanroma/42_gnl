@@ -33,16 +33,22 @@ size_t	ft_strlen(const char *str)
  to be part of the string; therefore if c is `\0', the functions locate the 
  terminating `\0'. */
 
-int	ft_findchar(const char *s, int c)
+int	ft_findchar(char *s, int c)
 {
+	int i;
+
+	i = 0;
 	if (!s)
-		return (-1);
-	else
+		return (0);
+	if (c == '\0')
+		return ((char *)&s[ft_strlen(s)]);
+	while (s[i] != '\0')
 	{
-		while (*s != (char)c)
-			s++;
-		return (1);
+		if (s[i] == (char) c)
+			return ((char *)&s[i]);
+		i++;
 	}
+	return (0);
 }
 
 /*The strdup() function allocates sufficient memory for a copy of the string 
